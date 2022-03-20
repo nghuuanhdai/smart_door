@@ -72,17 +72,18 @@ def room_detail(request, room):
 
 @csrf_exempt
 def check_schedule(request):
-    card_id = request.POST.get("card_id", "")
-    crr_date = datetime.now().date
+    card_id = request.GET['card_id']
+    crr_date = datetime.today()
     crr_time_slot = datetime.now().hour
+    access_granted = False
+    print(f'check access for {card_id} at {crr_date}::{crr_time_slot}')
     try:
         profile = Profile.objects.get(card_id=card_id)
-        valid_schedule = Schedule.objects.filter(user=profile.user).filter(time_slot=crr_time_slot).filter(schedule_date=crr_date)
-        return JsonResponse({'accessGranted': True})
+        valid_schedule_count = Schedule.objects.filter(user=profile.user).filter(time_slot=crr_time_slot).filter(schedule_date=crr_date).count()
+        access_granted = valid_schedule_count > 0
     except Profile.DoesNotExist:
-        return JsonResponse({'accessGranted': False})
-    except Schedule.DoesNotExist:
-        return JsonResponse({'accessGranted': False})
+        print('profile doesnt exist')
+    return JsonResponse({'accessGranted': access_granted})
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

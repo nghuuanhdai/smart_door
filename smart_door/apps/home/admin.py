@@ -11,7 +11,7 @@ from .models import Profile, Room, Schedule
 # Register your models here.
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'remote_management_permission']
+    list_display = ['user', 'remote_management_permission', 'card_id']
 
 
 @admin.register(Room)
