@@ -25,6 +25,7 @@ class Room(models.Model):
     name = models.TextField(max_length=120)
     description = models.TextField(default="None")
     contactInfo = models.TextField(default="N/A")
+    current_people_count = models.PositiveSmallIntegerField(default=0)
     slug = models.SlugField(unique=True)
 
     def __str__(self) -> str:

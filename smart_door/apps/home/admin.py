@@ -16,7 +16,7 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'description', 'contactInfo']
+    list_display = ['id', 'name', 'description', 'contactInfo', 'current_people_count']
 
 @admin.register(Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
