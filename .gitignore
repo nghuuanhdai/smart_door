@@ -1,0 +1,3 @@
+venv/
+smart_door/smart_door/__pycache__/
+smart_door/apps/__pycache__/

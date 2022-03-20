@@ -1,0 +1,58 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}	
+
+<script type="text/javascript">
+    var room_data = "{{room}}"
+</script>
+<br>
+<br>
+<div class="col-md-6 col-xl-4">
+    <hr>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{room.name}}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{room.contactInfo}}</h6>
+            <p class="card-text">{{room.description}}</p>
+        </div>
+    </div>
+</div>
+<div class="card-body">
+<div class="table-responsive">
+    <div class="customer-scroll" style="height:420px;position:relative;">
+        <table class="table table-hover m-b-0">
+            <thead>
+                <tr>
+                    <th><span>time slot</span></th>
+                    <th><span>Mon</span></th>
+                    <th><span>Tue</span></th>
+                    <th><span>Wed</span></th>
+                    <th><span>Thu</span></th>
+                    <th><span>Fri</span></th>
+                    <th><span>Sat</span></th>
+                    <th><span>Sun</span></th>
+                </tr>
+            </thead>
+            <tbody id="calendar_body">
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+    <script src="/static/assets/js/pages/room_detail_control.js"></script>
+    <!-- Apex Chart -->
+    <script src="/static/assets/js/plugins/apexcharts.min.js"></script>
+    <!-- custom-chart js -->
+    <script src="/static/assets/js/pages/dashboard-main.js"></script>
+
+{% endblock javascripts %}
