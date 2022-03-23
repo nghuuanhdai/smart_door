@@ -14,7 +14,7 @@ from django.urls import reverse
 from .models import Room, Schedule, Profile
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from datetime import datetime
+from datetime import date, datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
@@ -64,9 +64,45 @@ def rooms(request):
 @login_required(login_url="/login/")
 def room_detail(request, room):
     room = get_object_or_404(Room, slug=room)
-    context = {'room': room}
+    profile = request.user.profile
+    booked = Schedule.objects.filter(room=room.id).filter(user=profile.user)
+    book_info = list()
+    for book in booked:
+        if (book.schedule_date - date.today()).days < 0: continue
+        info = {"time_idx": book.time_slot - 9, "date_idx": (book.schedule_date - date.today()).days}
+        book_info += [info]
+    context = {'room': room, 'book_info': book_info}
     html_template = loader.get_template('home/room_detail.html')
     return HttpResponse(html_template.render(context, request))
+
+@csrf_exempt
+def add_sched(request):
+    profile = request.user.profile
+    if request.is_ajax() and request.method == "POST":
+        time = int(request.POST.get("time", ""))
+        date_time = request.POST.get("datetime", "")
+        date_time = datetime.strptime(date_time, '%d/%m/%Y').date()
+        room = request.POST.get("room", "")
+        room = get_object_or_404(Room, slug=room)
+        new_obj = Schedule(room=room, user=profile.user, time_slot=time, schedule_date=date_time)
+        new_obj.save()
+        return JsonResponse({"succ":"successful"}, status=200)
+    return JsonResponse({"error":"not valid"}, status=400)
+
+@csrf_exempt
+def del_sched(request):
+    profile = request.user.profile
+    if request.is_ajax() and request.method == "POST":
+        time = int(request.POST.get("time", ""))
+        date_time = request.POST.get("datetime", "")
+        date_time = datetime.strptime(date_time, '%d/%m/%Y').date()
+        room = request.POST.get("room", "")
+        room = get_object_or_404(Room, slug=room)
+        del_obj = Schedule.objects.filter(room=room.id).filter(user=profile.user).filter(time_slot=time).filter(schedule_date=date_time)
+        num_del = del_obj.delete()[0]
+        if num_del == 0: return JsonResponse({"error":"did not book yet"}, status=400)
+        return JsonResponse({"succ":"successful"}, status=200)
+    return JsonResponse({"error":"not valid"}, status=400)
 
 @csrf_exempt
 def check_schedule(request):

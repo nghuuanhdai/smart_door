@@ -3,52 +3,167 @@
 {% block title %} Dashboard {% endblock %} 
 
 <!-- Specific CSS goes HERE -->
-{% block stylesheets %}{% endblock stylesheets %}
+{% block stylesheets %}
+<link rel="stylesheet" href="/static/assets/css/pages/room_detail_control.css">
+{% endblock stylesheets %}
 
 {% block content %}	
 
 <script type="text/javascript">
-    var room_data = "{{room}}"
+    var room_data = "{{room}}";
 </script>
 <br>
 <br>
-<div class="col-md-6 col-xl-4">
-    <hr>
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">{{room.name}}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">{{room.contactInfo}}</h6>
-            <p class="card-text">{{room.description}}</p>
+<div style="margin-left: 10px">
+    <div class="col-md-6 col-xl-4">
+        <hr>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{room.name}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{room.contactInfo}}</h6>
+                <p class="card-text">{{room.description}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <div class="customer-scroll" style="height:420px;position:relative;">
+                <table class="table table-hover m-b-0">
+                    <thead>
+                        <tr>
+                            <th><span>time slot</span></th>
+                            <th class="th-timecell"><span></span></th>
+                            <th class="th-timecell"><span></span></th>
+                            <th class="th-timecell"><span></span></th>
+                            <th class="th-timecell"><span></span></th>
+                            <th class="th-timecell"><span></span></th>
+                            <th class="th-timecell"><span></span></th>
+                            <th class="th-timecell"><span></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="calendar_body">
+                        <tr>
+                            <td><span>9:00</span></td>
+                            <td class="timecell"><span ></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                        </tr>
+                        <tr>
+                            <td><span>10:00</span></td>
+                            <td class="timecell"><span ></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                        </tr>
+                        <tr>
+                            <td><span>11:00</span></td>
+                            <td class="timecell"><span ></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                        </tr>
+                        <tr>
+                            <td><span>12:00</span></td>
+                            <td class="timecell"><span ></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                        </tr>
+                        <tr>
+                            <td><span>13:00</span></td>
+                            <td class="timecell"><span ></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                        </tr>
+                        <tr>
+                            <td><span>14:00</span></td>
+                            <td class="timecell"><span ></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                        </tr>
+                        <tr>
+                            <td><span>15:00</span></td>
+                            <td class="timecell"><span ></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                        </tr>
+                        <tr>
+                            <td><span>16:00</span></td>
+                            <td class="timecell"><span ></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                        </tr>
+                        <tr>
+                            <td><span>17:00</span></td>
+                            <td class="timecell"><span ></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                        </tr>
+                        <tr>
+                            <td><span>18:00</span></td>
+                            <td class="timecell"><span ></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                            <td class="timecell"><span></span></td>
+                        </tr>
+                    </tbody>  
+                </table>
+            </div>
         </div>
     </div>
 </div>
-<div class="card-body">
-<div class="table-responsive">
-    <div class="customer-scroll" style="height:420px;position:relative;">
-        <table class="table table-hover m-b-0">
-            <thead>
-                <tr>
-                    <th><span>time slot</span></th>
-                    <th><span>Mon</span></th>
-                    <th><span>Tue</span></th>
-                    <th><span>Wed</span></th>
-                    <th><span>Thu</span></th>
-                    <th><span>Fri</span></th>
-                    <th><span>Sat</span></th>
-                    <th><span>Sun</span></th>
-                </tr>
-            </thead>
-            <tbody id="calendar_body">
-            </tbody>
-        </table>
-    </div>
-</div>
-</div>
-
 {% endblock content %}
+
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" 
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        var book_info = {{ book_info|safe }};
+        for (let i = 0; i < book_info.length; i++) {
+            let time = $($('tbody').find('tr')[book_info[i].time_idx]);
+            let date_cell = $(time.find('td')[book_info[i].date_idx + 1]).toggleClass("timecell-selected");
+        }
+    </script>
     <script src="/static/assets/js/pages/room_detail_control.js"></script>
     <!-- Apex Chart -->
     <script src="/static/assets/js/plugins/apexcharts.min.js"></script>

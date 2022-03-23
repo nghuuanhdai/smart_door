@@ -1,0 +1,21 @@
+th, td {
+    width: 12.5%;
+}
+
+.th-timecell, .timecell, .timecell-selected {
+    cursor: pointer;
+    border-left: 1px solid black;
+    background-color: white;
+}
+
+.timecell:hover {
+    background-color: lightgreen;
+}
+
+.timecell-selected {
+    background-color: cyan;
+}
+
+.timecell-selected:hover {
+    background-color: darkcyan;
+}
