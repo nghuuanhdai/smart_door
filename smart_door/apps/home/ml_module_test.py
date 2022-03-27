@@ -1,3 +1,3 @@
 from ml_module.people_counter import get_people_in_room_from_image
 
-get_people_in_room_from_image('test_img.jpg')
+get_people_in_room_from_image('test.jpg')

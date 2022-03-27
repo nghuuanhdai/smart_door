@@ -36,3 +36,19 @@ class Schedule(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     time_slot = models.PositiveSmallIntegerField(default=0)
     schedule_date = models.DateField(default=now, editable=True)
+
+
+class RoomAccessLog(models.Model):
+    STATUS_ALLOWED = "STATUS_ALLOWED"
+    STATUS_DENIED = "STATUS_DENIED"
+    STATUS_OUT = "STATUS_OUT"
+
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    temp = models.FloatField(default=37)
+    status = models.TextField()
+
+class RoomPresent(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    temp = models.FloatField(default=37)
