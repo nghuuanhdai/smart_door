@@ -1,0 +1,21 @@
+{"ROOM": "0", "SCHEDULE_BEGIN": ["1234567", "1910232", "1914691"]}
+{"ROOM": "0", "USERID_SCAN": "1910232"} // Scan reading ID = 1910232 --> Measure temperature and check (OK and not OK) --> Check LED (No people = 1)
+{"ROOM": "0", "USERID_SCAN": "1234567"} // Scan reading ID = 1234567 --> Measure temperature and check (OK and not OK) --> Check LED (No people = 2)
+{"ROOM": "0", "USERID_SCAN": "1123"} // Not valid
+{"ROOM": "0", "USERID_SCAN": "1910232"} // Scan reading ID = 1910232 --> Out of room --> Check LED (No people = 1)
+{"ROOM": "0", "USERID_SCAN": "1914691"} // Scan reading ID = 1914691 --> Measure temperature and check (OK and not OK) --> Check LED (No people = 2)
+{"ROOM": "0", "USERID_SCAN": "1234567"} // Scan reading ID = 1234567 --> Out of room --> Check LED (No people = 1)
+{"ROOM": "0", "USERID_SCAN": "1914691"} // Scan reading ID = 1914691 --> Out of room --> Check LED (No people = 0)
+------ Giả sử mọi người ra hết---------
+{"ROOM": "0", "SCHEDULE_BEGIN": ["7654321", "1238901", "2020020"]}
+{"ROOM": "0", "USERID_SCAN": "1914691"} // Not allowed
+{"ROOM": "0", "USERID_SCAN": "1238901"} // Scan reading ID = 1238901 --> Measure temperature and check (OK and not OK) --> Check LED (No people = 1)
+{"ROOM": "0", "USERID_SCAN": "2020020"} // Scan reading ID = 2020020 --> Measure temperature and check (OK and not OK) --> Check LED (No people = 2)
+------ Giả sử chỉ còn 2 người trong phòng là 2020020 và 1238901 ------
+{"ROOM": "0", "SCHEDULE_BEGIN": ["1910232", "2020020"]}
+------ ID 1238901 TIMEOUT SCHEDULING------------
+{"ROOM": "0", "USERID_SCAN": "1910232"} // Scan reading ID = 1910232 --> Measure temperature and check (OK and not OK) --> Check LED (No people = 1)
+{"ROOM": "0", "USERID_SCAN": "2020020"} // Scan reading ID = 2020020 --> Out of room
+------ Giả sử chỉ còn 1 người trong phòng là 1910232 ------
+{"ROOM": "0", "SCHEDULE_BEGIN": []}
+------ ID 1910232 TIMEOUT SCHEDULING------------
