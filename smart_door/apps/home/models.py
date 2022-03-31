@@ -34,7 +34,7 @@ class Room(models.Model):
 class Schedule(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    time_slot = models.PositiveSmallIntegerField(default=0)
+    time_slot = models.PositiveSmallIntegerField(default=9)
     schedule_date = models.DateField(default=now, editable=True)
 
 
