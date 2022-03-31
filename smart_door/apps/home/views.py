@@ -5,6 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 
 import imp
 from multiprocessing import context
+from operator import imod
 import os
 from django import template
 from django.contrib.auth.decorators import login_required
@@ -80,7 +81,7 @@ def room_detail(request, room):
 @csrf_exempt
 def add_sched(request):
     profile = request.user.profile
-    if request.is_ajax() and request.method == "POST":
+    if is_ajax(request) and request.method == "POST":
         time = int(request.POST.get("time", ""))
         date_time = request.POST.get("datetime", "")
         date_time = datetime.strptime(date_time, '%d/%m/%Y').date()
@@ -88,13 +89,14 @@ def add_sched(request):
         room = get_object_or_404(Room, slug=room)
         new_obj = Schedule(room=room, user=profile.user, time_slot=time, schedule_date=date_time)
         new_obj.save()
+        broadcast_schedule_update(date_time, time)
         return JsonResponse({"succ":"successful"}, status=200)
     return JsonResponse({"error":"not valid"}, status=400)
 
 @csrf_exempt
 def del_sched(request):
     profile = request.user.profile
-    if request.is_ajax() and request.method == "POST":
+    if is_ajax(request) and request.method == "POST":
         time = int(request.POST.get("time", ""))
         date_time = request.POST.get("datetime", "")
         date_time = datetime.strptime(date_time, '%d/%m/%Y').date()
@@ -103,13 +105,27 @@ def del_sched(request):
         del_obj = Schedule.objects.filter(room=room.id).filter(user=profile.user).filter(time_slot=time).filter(schedule_date=date_time)
         num_del = del_obj.delete()[0]
         if num_del == 0: return JsonResponse({"error":"did not book yet"}, status=400)
+        broadcast_schedule_update(date_time, time)
         return JsonResponse({"succ":"successful"}, status=200)
     return JsonResponse({"error":"not valid"}, status=400)
+
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+def broadcast_schedule_update(book_date, book_time_slot):
+    crr_date = datetime.today().date()
+    crr_time_slot = datetime.now().hour
+
+    print(f'check update schedule: book: {book_date}, {book_time_slot}, crr: {crr_date}, {crr_time_slot}')
+
+    if crr_date == book_date and crr_time_slot == book_time_slot:
+        from .door_schedule_messenger import update_access_list
+        update_access_list()
 
 @csrf_exempt
 def check_schedule(request):
     card_id = request.GET['card_id']
-    crr_date = datetime.today()
+    crr_date = datetime.today().date()
     crr_time_slot = datetime.now().hour
     access_granted = False
     print(f'check access for {card_id} at {crr_date}::{crr_time_slot}')

@@ -1,4 +1,5 @@
 # For running inference on the TF-Hub module.
+from charset_normalizer import detect
 import tensorflow as tf
 import tensorflow_hub as hub
 import time
@@ -10,10 +11,14 @@ from PIL import ImageDraw
 from PIL import ImageFont
 from PIL import ImageOps
 
-module_handle = "https://tfhub.dev/tensorflow/ssd_mobilenet_v2/2"
+detector = None
 
-handle = hub.load(module_handle)
-detector = handle.signatures['serving_default']
+def ml_init():
+  module_handle = "https://tfhub.dev/tensorflow/ssd_mobilenet_v2/2"
+
+  handle = hub.load(module_handle)
+  global detector
+  detector = handle.signatures['serving_default']
 
 def draw_bounding_box_on_image(image,
                                ymin,
@@ -93,6 +98,9 @@ def get_people_in_room_from_image(image_path):
     img = tf.image.decode_jpeg(img, channels=3)
     converted_img  = tf.image.convert_image_dtype(img, tf.uint8)[tf.newaxis, ...]
     start_time = time.time()
+    global detector
+    if detector == None:
+      ml_init()
     result = detector(converted_img)
     end_time = time.time()
     # print("Inference time: ", end_time-start_time)
