@@ -2,6 +2,9 @@ venv/
 smart_door/smart_door/__pycache__/
 smart_door/apps/__pycache__/
 smart_door/apps/authentication/__pycache__
+smart_door/apps/authentication/migrations/__pycache__
 smart_door/apps/home/__pycache__
 smart_door/apps/home/migrations/__pycache__
+smart_door/apps/overview/__pycache__
+smart_door/apps/overview/migrations/__pycache__
 smart_door/test.py
