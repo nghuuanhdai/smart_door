@@ -58,8 +58,8 @@
         <div class="card-body-data">
             Usage time (hour)
         </div>
-        <div id="dashboard">
-            <iframe src="https://io.adafruit.com/khanhhungvu1508/f/numpeople-doormonitor"></iframe>
+        <div>
+            <canvas id="myChart"></canvas>
         </div>
     </div>
     <div class="card-body">
@@ -121,8 +121,31 @@
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" 
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="text/javascript">
-        // $("#dashboard").load('https://io.adafruit.com/huuthotn01/feeds/temperature-demo/ .line_chart canvas');
+        var chart_time = {{ time|safe }};
+        var chart_val = {{ value|safe }};
+        console.log("Time:", chart_time);
+        console.log("Value:", chart_val);
+        const labels = chart_time;
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Number of people used room',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgb(255, 99, 132)',
+                data: chart_val,
+            }]
+        };
+        const config = {
+            type: 'line',
+            data: data,
+            options: {}
+        };
+        const myChart = new Chart(
+            document.getElementById('myChart'),
+            config
+        );
     </script>
 
 {% endblock javascripts %}

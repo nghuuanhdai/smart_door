@@ -17,6 +17,7 @@ from django.contrib.auth.models import User
 from datetime import date, datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from .utils import getFeedData
 
 now = datetime.now()
 
@@ -25,33 +26,11 @@ now = datetime.now()
 def admin_overview(request):
     profile = request.user
     super_user = User.objects.filter(is_superuser=True)
-    if not (profile in super_user): return HttpResponse("<h1>Not allowed</h1>");
-    context = {}
+    if not (profile in super_user): return HttpResponse("<h1>Not allowed</h1>")
+    time, value = getFeedData()
+    context = {"time": time, "value": value}
     html_template = loader.get_template('overview/overview.html')
     return HttpResponse(html_template.render(context, request))
-    # context = {}
-    # All resource paths end in .html.
-    # Pick out the html file name from the url. And load that template.
-    # try:
-
-    #     load_template = request.path.split('/')[-1]
-
-    #     if load_template == 'admin':
-    #         return HttpResponseRedirect(reverse('admin:index'))
-    #     context['segment'] = load_template
-
-    #     html_template = loader.get_template('home/' + load_template)
-    #     return HttpResponse(html_template.render(context, request))
-
-    # except template.TemplateDoesNotExist:
-
-    #     html_template = loader.get_template('home/page-404.html')
-    #     return HttpResponse(html_template.render(context, request))
-
-    # except:
-    #     html_template = loader.get_template('home/page-500.html')
-    #     return HttpResponse(html_template.render(context, request))
-    
     
 
 @csrf_exempt
