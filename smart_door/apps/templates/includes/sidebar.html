@@ -1,17 +1,19 @@
 
 	<!-- [ navigation menu ] start -->
-	<nav class="pcoded-navbar menupos-fixed menu-light " style="display: none">
+	<nav class="pcoded-navbar menupos-fixed menu-light ">
 		<div class="navbar-wrapper  ">
 			<div class="navbar-content scroll-div " >
 				<ul class="nav pcoded-inner-navbar ">
 					<li class="nav-item pcoded-menu-caption">
 						<label>Navigation</label>
 					</li>
+					{% if user.profile.remote_management_permission %}
 					<li class="nav-item">
-					    <a href="/" class="nav-link ">
+					    <a href="/overview" class="nav-link ">
                             <span class="pcoded-micon">
                                 <i class="feather icon-home"></i></span><span class="pcoded-mtext">Dashboard</span></a>
 					</li>
+					{% endif %}
 					<li class="nav-item">
 					    <a href="{% url 'rooms' %}" class="nav-link ">
                             <span class="pcoded-micon">
