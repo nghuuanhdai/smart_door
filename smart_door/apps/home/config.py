@@ -5,7 +5,6 @@ Copyright (c) 2019 - present AppSeed.us
 
 from datetime import datetime
 from django.apps import AppConfig
-from apscheduler.schedulers.background import BackgroundScheduler
 
 class MyConfig(AppConfig):
     name = 'apps.home'
@@ -17,7 +16,7 @@ class MyConfig(AppConfig):
         data_connect()
         from .ml_module.people_counter import ml_init
         ml_init()
-
+        from apscheduler.schedulers.background import BackgroundScheduler
         from .door_schedule_messenger import update_access_list
         update_access_list
         scheduler = BackgroundScheduler()

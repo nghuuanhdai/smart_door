@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
-from .models import Room, Schedule, Profile
+from .models import Room, Schedule, Profile, RoomPresent
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from datetime import date, datetime
@@ -20,6 +20,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from pathlib import Path
 from .ml_module.people_counter import get_people_in_room_from_image
+from .mail_module import alert_admin
 
 now = datetime.now()
 
@@ -144,9 +145,9 @@ def room_image_upload(request):
     room_id = request.POST.get("room_id", 0)
     image_path = handle_uploaded_room_image(room_id, request.FILES['file'])
     people_in_image = get_people_in_room_from_image(image_path)
-    people_in_schedule = get_people_in_room_from_schedule(room_id)
-    if people_in_image > people_in_schedule and people_in_schedule >= 0:
-        send_over_crowded_warning(room_id, people_in_image, people_in_schedule)
+    authorized_people_count = get_people_entered_room(room_id)
+    if people_in_image > authorized_people_count and authorized_people_count >= 0:
+        send_over_crowded_warning(room_id, people_in_image, authorized_people_count, image_path)
     try:
         room = Room.objects.get(id=room_id)
         room.current_people_count = people_in_image
@@ -155,7 +156,7 @@ def room_image_upload(request):
         print('room does not exist')
     return JsonResponse({
         'people_in_image': people_in_image,
-        'people_in_schedule': people_in_schedule,
+        'authorized_people_count': authorized_people_count,
         'time': datetime.now(),
         'room_id': room_id
     })
@@ -169,6 +170,14 @@ def handle_uploaded_room_image(room_id, f):
     
     return path
 
+def get_people_entered_room(room_id):
+    try:
+        room = Room.objects.get(id=room_id)
+        present_number = RoomPresent.objects.filter(room=room).count()
+        return present_number
+    except Room.DoesNotExist:
+        return -1
+
 def get_people_in_room_from_schedule(room_id):
     try:
         room = Room.objects.get(id=room_id)
@@ -180,5 +189,10 @@ def get_people_in_room_from_schedule(room_id):
         return -1
 
 
-def send_over_crowded_warning(room_id, people_in_image, people_in_schedule):
-    print(f'sending warning message {room_id}: {people_in_image}/{people_in_schedule}')
+def send_over_crowded_warning(room_id, people_in_image, people_in_schedule, attach_image):
+    try:
+        room = Room.objects.get(id=room_id)
+        alert_email = room.contactInfo
+        alert_admin(alert_email, f'{datetime.now()}\nUnexpected number of people in room {room.name}', f'expect this room to have {people_in_schedule}, but detected {people_in_image}', attach_image)
+    except Room.DoesNotExist:
+        return

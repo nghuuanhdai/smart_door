@@ -7,7 +7,7 @@ from .models import Room, RoomAccessLog, RoomPresent
 
 AIO_USERNAME = "khanhhungvu1508"
 AIO_KEY = "aio_pcJU685m50e7ScdBM6EbAhS28hze"
-AIO_DOORMONITOR = "MSG_DOOR2_DoorMonitor"
+AIO_DOORMONITOR = "MSG_DoorMonitor"
 AIO_FEEDS = [AIO_DOORMONITOR]
 
 __shared_client = None
