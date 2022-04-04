@@ -1,0 +1,66 @@
+.card-body {
+    margin-right: 3%;
+}
+
+.card-body .first-card {
+    margin-left: 1%;
+    margin-right: 1%;
+    text-align: center;
+    font-size: 150%;
+}
+
+.card-body .first-card:nth-child(1) {
+    background-color: chartreuse;
+}
+
+.card-body .first-card:nth-child(2) {
+    background-color: red;
+}
+
+.card-body .first-card:nth-child(3) {
+    background-color: yellow;
+}
+
+.card-body .first-card:nth-child(4) {
+    background-color:aqua;
+}
+
+.card-body-header, .card-body-header + div {
+    font-weight: bold;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+.card-body-data {
+    font-weight: bold;
+    font-size: 150%;
+}
+
+#small-text {
+    margin-top: 1%;
+    font-weight: normal;
+    font-size: 70%;
+}
+
+#small-text span {
+    color:cornflowerblue;
+}
+
+#view_detail {
+    text-align: right;
+    color:blue;
+    cursor: pointer;
+}
+
+.col-data-cate {
+    margin-top: 0.5%;
+    margin-bottom: 0.5%;
+    font-weight: bold;
+}
+
+.col-data-result {
+    margin-top: 0.5%;
+    margin-bottom: 0.5%;
+    text-align: right;
+    color: gray;
+}
