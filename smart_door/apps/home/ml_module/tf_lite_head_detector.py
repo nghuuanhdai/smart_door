@@ -5,7 +5,8 @@ import tensorflow as tf
 import numpy as np
 import cv2
 from tflite_support import metadata
-
+from PIL import Image
+import os
 Interpreter = tf.lite.Interpreter
 load_delegate = tf.lite.experimental.load_delegate
 
@@ -296,3 +297,27 @@ def visualize(
                 _FONT_SIZE, _TEXT_COLOR, _FONT_THICKNESS)
 
   return image
+
+detector = None
+
+def init_tflite():
+  # Load the TFLite model
+  options = ObjectDetectorOptions(
+    num_threads=4,
+    score_threshold=0.2,
+  )
+  global detector
+  detector = ObjectDetector(model_path=os.path.join(os.path.dirname(__file__), 'head.tflite'), options=options)
+
+def get_people_tflite(image_path):
+  image = Image.open(image_path).convert('RGB')
+  image.thumbnail((512, 512), Image.ANTIALIAS)
+  image_np = np.asarray(image)
+  global detector
+  if detector == None:
+    init_tflite()
+  detections = detector.detect(image_np)
+  image_np = visualize(image_np, detections)
+  detection_image_path = os.path.splitext(image_path)[0] + '_tflite_head.jpg'
+  Image.fromarray(image_np).save(detection_image_path)
+  return len(detections), detection_image_path

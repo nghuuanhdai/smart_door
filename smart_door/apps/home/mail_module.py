@@ -1,4 +1,4 @@
-def alert_admin(admin_email, subject, message, image_path):
+def alert_admin(admin_email, subject, message, image_paths):
     from email.message import EmailMessage
     from email.mime.image import MIMEImage
     from email.mime.multipart import MIMEMultipart
@@ -14,10 +14,11 @@ def alert_admin(admin_email, subject, message, image_path):
     msg['To'] = admin_email
 
     msg.attach(text)
-    with open(image_path, 'rb') as f:
-        img_data = f.read()
-    image = MIMEImage(img_data, name=os.path.basename('cctv_footage'))
-    msg.attach(image)
+    for image_name in image_paths:
+        with open(image_paths[image_name], 'rb') as f:
+            img_data = f.read()
+        image = MIMEImage(img_data, name=image_name)
+        msg.attach(image)
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         try:

@@ -144,10 +144,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 def room_image_upload(request):
     room_id = request.POST.get("room_id", 0)
     image_path = handle_uploaded_room_image(room_id, request.FILES['file'])
-    people_in_image = get_people_in_room_from_image(image_path)
+    person_count, head_count, person_image_path, head_image_path = get_people_in_room_from_image(image_path)
+    people_in_image = max(person_count, head_count)
+
     authorized_people_count = get_people_entered_room(room_id)
     if people_in_image > authorized_people_count and authorized_people_count >= 0:
-        send_over_crowded_warning(room_id, people_in_image, authorized_people_count, image_path)
+        send_over_crowded_warning(room_id, people_in_image, authorized_people_count, {'person': person_image_path, 'head': head_image_path})
     try:
         room = Room.objects.get(id=room_id)
         room.current_people_count = people_in_image
@@ -189,10 +191,10 @@ def get_people_in_room_from_schedule(room_id):
         return -1
 
 
-def send_over_crowded_warning(room_id, people_in_image, people_in_schedule, attach_image):
+def send_over_crowded_warning(room_id, people_in_image, people_in_schedule, attach_images):
     try:
         room = Room.objects.get(id=room_id)
         alert_email = room.room_alert_email
-        alert_admin(alert_email, f'Unexpected number of people in room {room.name}', f'{datetime.now()}\nexpect this room to have {people_in_schedule}, but detected {people_in_image}', attach_image)
+        alert_admin(alert_email, f'Unexpected number of people in room {room.name}', f'{datetime.now()}\nexpect this room to have {people_in_schedule}, but detected {people_in_image}', attach_images)
     except Room.DoesNotExist:
         return

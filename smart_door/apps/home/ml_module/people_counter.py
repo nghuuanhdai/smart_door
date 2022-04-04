@@ -1,27 +1,15 @@
+from operator import imod
 import numpy as np
 from PIL import Image
 import os
-from .tf_lite_head_detector import *
-
-detector = None
+from .tf_lite_head_detector import init_tflite, get_people_tflite
+from .coco_person_detector import coco_person_init, get_people_coco
 
 def ml_init():
-  # Load the TFLite model
-  options = ObjectDetectorOptions(
-    num_threads=4,
-    score_threshold=0.2,
-  )
-  global detector
-  detector = ObjectDetector(model_path=os.path.join(os.path.dirname(__file__), 'head.tflite'), options=options)
+  init_tflite()
+  coco_person_init()
 
 def get_people_in_room_from_image(image_path):
-  image = Image.open(image_path).convert('RGB')
-  image.thumbnail((512, 512), Image.ANTIALIAS)
-  image_np = np.asarray(image)
-  global detector
-  if detector == None:
-    ml_init()
-  detections = detector.detect(image_np)
-  image_np = visualize(image_np, detections)
-  Image.fromarray(image_np).save(image_path)
-  return len(detections)
+  coco_count, coco_image = get_people_coco(image_path)
+  tflite_count, tf_image = get_people_tflite(image_path)
+  return coco_count, tflite_count, coco_image, tf_image
