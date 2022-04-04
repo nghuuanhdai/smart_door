@@ -7,7 +7,7 @@
 					<li class="nav-item pcoded-menu-caption">
 						<label>Navigation</label>
 					</li>
-					{% if user.profile.remote_management_permission %}
+					{% if user.is_superuser %}
 					<li class="nav-item">
 					    <a href="/overview" class="nav-link ">
                             <span class="pcoded-micon">

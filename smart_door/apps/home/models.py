@@ -8,7 +8,6 @@ from django.utils.timezone import now
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    remote_management_permission = models.BooleanField(default=False)
     card_id = models.TextField(blank=True, null=True)
 
 @receiver(post_save, sender=User)
