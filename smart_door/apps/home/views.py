@@ -192,7 +192,7 @@ def get_people_in_room_from_schedule(room_id):
 def send_over_crowded_warning(room_id, people_in_image, people_in_schedule, attach_image):
     try:
         room = Room.objects.get(id=room_id)
-        alert_email = room.contactInfo
+        alert_email = room.room_alert_email
         alert_admin(alert_email, f'Unexpected number of people in room {room.name}', f'{datetime.now()}\nexpect this room to have {people_in_schedule}, but detected {people_in_image}', attach_image)
     except Room.DoesNotExist:
         return

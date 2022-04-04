@@ -20,5 +20,8 @@ def alert_admin(admin_email, subject, message, image_path):
     msg.attach(image)
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login(email_username, password)
-        smtp.sendmail(email_username, admin_email, msg.as_string())
+        try:
+            smtp.login(email_username, password)
+            smtp.sendmail(email_username, admin_email, msg.as_string())
+        except:
+            pass

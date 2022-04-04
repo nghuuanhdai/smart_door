@@ -25,6 +25,7 @@ class Room(models.Model):
     name = models.TextField(max_length=120)
     description = models.TextField(default="None")
     contactInfo = models.TextField(default="N/A")
+    room_alert_email = models.EmailField(default="trackerelearning@gmail.com")
     current_people_count = models.PositiveSmallIntegerField(default=0)
     slug = models.SlugField(unique=True)
 
