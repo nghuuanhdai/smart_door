@@ -1,8 +1,9 @@
 #define TIMER_CYCLE 10
-#define ROOM_ID "0"
+#define ROOM_ID "1"
 
 // DHT11 module
 #define DHTPIN 30
+#define TEMPERATURE_ALLOW_MAX 37
 
 // DOOR module
 #define DOOR_PIN 26

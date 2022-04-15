@@ -10,6 +10,8 @@ AIO_DOORMONITOR = ["LED_DoorMonitor", "DOOR_DoorMonitor", "NUMPEOPLE_DoorMonitor
 
 arduino = serial.Serial(port='COM2', baudrate=9600, timeout=.1)
 
+room_id = "1"
+
 def  connected(client):
     print("Connected...")
     for feed in AIO_DOORMONITOR:
@@ -26,11 +28,11 @@ def  message(client , feed_id , payload):
     print("Topics: " + feed_id)
     print("Received data: " + payload)
     if (feed_id == "LED_DoorMonitor" and payload == "1"):
-        arduino.write(bytes("#ROOM 0 LED_ON*", 'UTF-8')) # Suppose we only consider ROOM 0
+        arduino.write(bytes("#ROOM " + room_id + " LED_ON*", 'UTF-8')) # Suppose we only consider ROOM 0
     elif (feed_id == "LED_DoorMonitor" and payload == "0"):
-        arduino.write(bytes("#ROOM 0 LED_OFF*", 'UTF-8')) # Suppose we only consider ROOM 0
+        arduino.write(bytes("#ROOM " + room_id + " LED_OFF*", 'UTF-8')) # Suppose we only consider ROOM 0
     elif (feed_id == "DOOR_DoorMonitor" and payload == "1"):
-        arduino.write(bytes("#ROOM 0 DOOR_OPEN*", 'UTF-8')) # Suppose we only consider ROOM 0
+        arduino.write(bytes("#ROOM " + room_id + " DOOR_OPEN*", 'UTF-8')) # Suppose we only consider ROOM 0
     elif (feed_id == "MSG_DoorMonitor"):
         jsonobj = json.loads(payload)
         # Always have syntax of json

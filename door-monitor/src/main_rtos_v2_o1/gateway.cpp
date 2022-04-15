@@ -107,7 +107,7 @@ String task_gateway_sending_outroom(String IDs) {
 }
 
 String task_gateway_sending_inroom(String IDs, float temperature) {
-  if (temperature >= 38)
+  if (temperature > TEMPERATURE_ALLOW_MAX)
     return "*ROOM " + String(ROOM_ID) + " ID " + IDs + " TEMPERATURE " + String(temperature, 1) + " STATUS NOT_ALLOW#";
   else
     return "*ROOM " + String(ROOM_ID) + " ID " + IDs + " TEMPERATURE " + String(temperature, 1) + " STATUS ALLOW#";

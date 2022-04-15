@@ -189,7 +189,7 @@ void processRFID(String IDUser){
 void process_measure_temperature_demo() {
   if (getTimerFlag(6) == 1 && id != "") {
     task_measure_human_temperature();
-    if (temperature >= 38) {
+    if (temperature > TEMPERATURE_ALLOW_MAX) {
       Serial.println(task_gateway_sending_inroom(id, temperature));
       task_scanRFID_display(1);
     }
