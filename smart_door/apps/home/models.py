@@ -26,6 +26,8 @@ class Room(models.Model):
     contactInfo = models.TextField(default="N/A")
     room_alert_email = models.EmailField(default="trackerelearning@gmail.com")
     current_people_count = models.PositiveSmallIntegerField(default=0)
+    max_occupancy = models.PositiveSmallIntegerField(default=10)
+    authorized_present = models.PositiveSmallIntegerField(default=10)
     slug = models.SlugField(unique=True)
 
     def __str__(self) -> str:
@@ -49,6 +51,6 @@ class RoomAccessLog(models.Model):
     status = models.TextField()
 
 class RoomPresent(models.Model):
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    room = models.OneToOneField(Room, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     temp = models.FloatField(default=37)

@@ -46,7 +46,7 @@
                                                     <tr>
                                                         <th><span>Room name</span></th>
                                                         <th><span>Room location description</span></th>
-                                                        <th><span>Availability</span></th>
+                                                        <th><span>Availability <br>(occupancy/authorized/max)</span></th>
                                                         <th><span>Contact Info</span></th>
                                                     </tr>
                                                 </thead>
@@ -55,9 +55,9 @@
                                                     <tr>
                                                         <td><a href="{% url 'room_detail' room.slug %}">{{room.name}}</a></td>
                                                         <td>{{room.description}}</td>
-                                                        <td>3/4
+                                                        <td>{{room.current_people_count}}/{{room.authorized_present}}/{{room.max_occupancy}}
                                                             <div class="progress mt-1" style="height:4px;">
-                                                                <div class="progress-bar bg-primary rounded" role="progressbar" style="width: 75%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                                                <div class="progress-bar bg-primary rounded" role="progressbar" style="width: 100%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                                                             </div>
                                                         </td>
                                                         <td> {{room.contactInfo}}
