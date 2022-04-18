@@ -22,6 +22,13 @@
                         <h5 class="card-title">{{room.name}}</h5>
                         <h6 class="card-subtitle mb-2 text-muted">{{room.contactInfo}}</h6>
                         <p class="card-text">{{room.description}}</p>
+                        {% if user.is_superuser %}
+                        <button type="button" class="btn  btn-primary" id="buzz_btn">BUZZ</button>
+                        <div class="checkbox checkbox-primary d-inline">
+                            <input type="checkbox" name="checkbox-fill-2" id="led_toogle">
+                            <label for="led_toogle" class="cr"> LED</label>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -167,10 +174,73 @@
         let date_cell = $(time.find('td')[book_info[i].date_idx + 1]).toggleClass("timecell-selected");
     }
 </script>
+{% if user.is_superuser %}
+<script>
+    function create_UUID(){
+        var dt = new Date().getTime();
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = (dt + Math.random()*16)%16 | 0;
+            dt = Math.floor(dt/16);
+            return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+        });
+        return uuid;
+    }
+
+    client_uuid = create_UUID();
+    
+    var socket = new WebSocket('ws://' + window.location.host + '/ws/admin/'+{{room.id}}+'/');
+    
+    socket.onopen = function open() {
+        console.log('WebSockets connection created.');
+    };
+
+    document.querySelector('#buzz_btn').onclick = function(e) {
+        socket.send(JSON.stringify({
+            'mqtt_message': true,
+            'mqtt_data': {
+                'ROOM': '{{room.id}}',
+                'BUZZ': '1'
+            }
+            
+        }));
+    };
+
+    led_toggle = document.querySelector('#led_toogle')
+    led_toggle.onclick = function(e) {
+        socket.send(JSON.stringify({
+            'mqtt_message': true,
+            'mqtt_data': {
+                'ROOM': '{{room.id}}',
+                'LED': led_toggle.checked?'1':'0',
+                'CLIENT_UUID': client_uuid
+            }
+        }));
+    };
+
+    socket.onmessage = function(message) {
+        data = JSON.parse(message.data)
+        console.log(data)
+        if (data.hasOwnProperty('mqtt_message'))
+        {
+            if (data['mqtt_data'].hasOwnProperty('LED'))
+            {
+                if (!data['mqtt_data'].hasOwnProperty('CLIENT_UUID') && data['mqtt_data']['CLIENT_UUID'] != client_uuid)
+                {
+                    led_toggle.checked = data['mqtt_data']['LED'] == '1';
+                }
+            }
+        }
+    }
+
+    if (socket.readyState == WebSocket.OPEN) {
+        socket.onopen();
+    }
+</script>
+{% endif %}
 <script src="/static/assets/js/pages/room_detail_control.js"></script>
 <!-- Apex Chart -->
-<script src="/static/assets/js/plugins/apexcharts.min.js"></script>
+<!-- <script src="/static/assets/js/plugins/apexcharts.min.js"></script> -->
 <!-- custom-chart js -->
-<script src="/static/assets/js/pages/dashboard-main.js"></script>
+<!-- <script src="/static/assets/js/pages/dashboard-main.js"></script> -->
 
 {% endblock javascripts %}

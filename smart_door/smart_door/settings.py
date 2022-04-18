@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'apps.authentication',
     'apps.home',
     'apps.overview',
@@ -85,7 +86,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'smart_door.wsgi.application'
+# WSGI_APPLICATION = 'smart_door.wsgi.application'
+ASGI_APPLICATION = "smart_door.asgi.application"
 
 
 # Database
