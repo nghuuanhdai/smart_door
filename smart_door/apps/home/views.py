@@ -5,13 +5,14 @@ Copyright (c) 2019 - present AppSeed.us
 
 import imp
 from multiprocessing import context
+from operator import imod
 import os
 from django import template
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
-from .models import Room, Schedule, Profile
+from .models import Room, Schedule, Profile, RoomPresent
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from datetime import date, datetime
@@ -19,6 +20,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from pathlib import Path
 from .ml_module.people_counter import get_people_in_room_from_image
+from .mail_module import alert_admin
 
 now = datetime.now()
 
@@ -80,7 +82,7 @@ def room_detail(request, room):
 @csrf_exempt
 def add_sched(request):
     profile = request.user.profile
-    if request.is_ajax() and request.method == "POST":
+    if is_ajax(request) and request.method == "POST":
         time = int(request.POST.get("time", ""))
         date_time = request.POST.get("datetime", "")
         date_time = datetime.strptime(date_time, '%d/%m/%Y').date()
@@ -88,13 +90,14 @@ def add_sched(request):
         room = get_object_or_404(Room, slug=room)
         new_obj = Schedule(room=room, user=profile.user, time_slot=time, schedule_date=date_time)
         new_obj.save()
+        broadcast_schedule_update(date_time, time)
         return JsonResponse({"succ":"successful"}, status=200)
     return JsonResponse({"error":"not valid"}, status=400)
 
 @csrf_exempt
 def del_sched(request):
     profile = request.user.profile
-    if request.is_ajax() and request.method == "POST":
+    if is_ajax(request) and request.method == "POST":
         time = int(request.POST.get("time", ""))
         date_time = request.POST.get("datetime", "")
         date_time = datetime.strptime(date_time, '%d/%m/%Y').date()
@@ -103,13 +106,27 @@ def del_sched(request):
         del_obj = Schedule.objects.filter(room=room.id).filter(user=profile.user).filter(time_slot=time).filter(schedule_date=date_time)
         num_del = del_obj.delete()[0]
         if num_del == 0: return JsonResponse({"error":"did not book yet"}, status=400)
+        broadcast_schedule_update(date_time, time)
         return JsonResponse({"succ":"successful"}, status=200)
     return JsonResponse({"error":"not valid"}, status=400)
+
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+def broadcast_schedule_update(book_date, book_time_slot):
+    crr_date = datetime.today().date()
+    crr_time_slot = datetime.now().hour
+
+    print(f'check update schedule: book: {book_date}, {book_time_slot}, crr: {crr_date}, {crr_time_slot}')
+
+    if crr_date == book_date and crr_time_slot == book_time_slot:
+        from .door_schedule_messenger import update_access_list
+        update_access_list()
 
 @csrf_exempt
 def check_schedule(request):
     card_id = request.GET['card_id']
-    crr_date = datetime.today()
+    crr_date = datetime.today().date()
     crr_time_slot = datetime.now().hour
     access_granted = False
     print(f'check access for {card_id} at {crr_date}::{crr_time_slot}')
@@ -127,10 +144,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 def room_image_upload(request):
     room_id = request.POST.get("room_id", 0)
     image_path = handle_uploaded_room_image(room_id, request.FILES['file'])
-    people_in_image = get_people_in_room_from_image(image_path)
-    people_in_schedule = get_people_in_room_from_schedule(room_id)
-    if people_in_image > people_in_schedule and people_in_schedule >= 0:
-        send_over_crowded_warning(room_id, people_in_image, people_in_schedule)
+    person_count, head_count, person_image_path, head_image_path = get_people_in_room_from_image(image_path)
+    people_in_image = max(person_count, head_count)
+
+    authorized_people_count = get_people_entered_room(room_id)
+    if people_in_image > authorized_people_count and authorized_people_count >= 0:
+        send_over_crowded_warning(room_id, people_in_image, authorized_people_count, {'person': person_image_path, 'head': head_image_path})
     try:
         room = Room.objects.get(id=room_id)
         room.current_people_count = people_in_image
@@ -139,7 +158,7 @@ def room_image_upload(request):
         print('room does not exist')
     return JsonResponse({
         'people_in_image': people_in_image,
-        'people_in_schedule': people_in_schedule,
+        'authorized_people_count': authorized_people_count,
         'time': datetime.now(),
         'room_id': room_id
     })
@@ -153,6 +172,14 @@ def handle_uploaded_room_image(room_id, f):
     
     return path
 
+def get_people_entered_room(room_id):
+    try:
+        room = Room.objects.get(id=room_id)
+        present_number = RoomPresent.objects.filter(room=room).count()
+        return present_number
+    except Room.DoesNotExist:
+        return -1
+
 def get_people_in_room_from_schedule(room_id):
     try:
         room = Room.objects.get(id=room_id)
@@ -164,5 +191,10 @@ def get_people_in_room_from_schedule(room_id):
         return -1
 
 
-def send_over_crowded_warning(room_id, people_in_image, people_in_schedule):
-    print(f'sending warning message {room_id}: {people_in_image}/{people_in_schedule}')
+def send_over_crowded_warning(room_id, people_in_image, people_in_schedule, attach_images):
+    try:
+        room = Room.objects.get(id=room_id)
+        alert_email = room.room_alert_email
+        alert_admin(alert_email, f'Unexpected number of people in room {room.name}', f'{datetime.now()}\nexpect this room to have {people_in_schedule}, but detected {people_in_image}', attach_images)
+    except Room.DoesNotExist:
+        return

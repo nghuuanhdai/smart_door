@@ -7,11 +7,13 @@
 					<li class="nav-item pcoded-menu-caption">
 						<label>Navigation</label>
 					</li>
+					{% if user.is_superuser %}
 					<li class="nav-item">
-					    <a href="/" class="nav-link ">
+					    <a href="/overview" class="nav-link ">
                             <span class="pcoded-micon">
                                 <i class="feather icon-home"></i></span><span class="pcoded-mtext">Dashboard</span></a>
 					</li>
+					{% endif %}
 					<li class="nav-item">
 					    <a href="{% url 'rooms' %}" class="nav-link ">
                             <span class="pcoded-micon">

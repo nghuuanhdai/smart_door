@@ -35,20 +35,29 @@ CACHES = {
     }
 }
 
+ALLOWED_HOSTS=['*']
+CORS_ORIGIN_ALLOW_ALL=True
+CORS_ALLOW_CREDENTIALS = True
+
 
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.home'
+    'channels',
+    'apps.authentication',
+    'apps.home',
+    'apps.overview',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -77,7 +86,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'smart_door.wsgi.application'
+# WSGI_APPLICATION = 'smart_door.wsgi.application'
+ASGI_APPLICATION = "smart_door.asgi.application"
 
 
 # Database
