@@ -1,0 +1,94 @@
+{% extends "layouts/base-fullscreen.html" %}
+
+{% block title %} Forget Password {% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="/static/assets/css/pages/forget_pass.css">
+{% endblock stylesheets %}
+
+{% block content %} 
+
+	<!-- [ auth-signin ] start -->
+	<div class="auth-wrapper">
+		<div class="auth-content">
+			<div class="card">
+				<div class="row align-items-center text-center">
+					<div class="col-md-12">
+						<div class="card-body">
+
+							<img src="/static/assets/images/logo-dark.png" alt="" class="img-fluid mb-4">
+							<h4 class="mb-3 f-w-400">
+								Forget Password
+							</h4>
+							<!-- dummy spacer -->
+							<p> <br /> </p>						
+							<form role="form" method="post" action="">
+
+								{% csrf_token %} 
+								
+								<div class="input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text"><i class="feather icon-user"></i></span>
+									</div>
+									{{ form.username }}
+								</div>
+								<p style="text-align: left"><a href="{% url 'login' %}">Back to log in</a></p>
+								<button id="forget_pass_submit" type="submit" name="forget_pass" class="btn btn-block btn-primary mb-4">Reset password</button>
+							
+							</form>
+
+							<span class="mb-0 text-muted">
+								{% if status %}
+									{% if status == 1 %}
+										<div id="alert_success" class="alert alert-success alert-dismissible fade show" role="alert">
+											{{ msg | safe }}
+											<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+										</div>
+									{% else %}
+										<div id="alert_fail" class="alert alert-danger alert-dismissible fade show" role="alert">
+											{{ msg | safe }}
+											<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+										</div>
+									{% endif %}
+								{% endif %} 
+							</span>
+							<!--<div id="alert_success" class="alert alert-success alert-dismissible fade show" role="alert">
+								Reset password by the link sent via email
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div id="alert_fail" class="alert alert-danger alert-dismissible fade show" role="alert">
+								Wrong credentials, try again
+								<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div> -->
+							<p class="mb-2 text-muted">
+								<br />
+								&copy; <a target="_blank" rel="noopener" href="https://bit.ly/37fF9RT" class="f-w-400">CodedThemes</a>
+								- <a target="_blank" rel="noopener" 
+								     href="https://appseed.us/admin-dashboards/django-gradient-able" class="f-w-400">Django Gradient</a>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- [ auth-signin ] end -->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+	<script src="/static/assets/js/waves.min.js"></script>
+
+	<script src="/static/assets/js/pages/forget-pass.js"></script>
+
+{% endblock javascripts %} 

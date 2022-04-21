@@ -23,6 +23,32 @@ class LoginForm(forms.Form):
                 "class": "form-control"
             }
         ))
+    
+class ForgetPass(forms.Form):
+    username = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Username",
+                "class": "form-control"
+            }
+        ))
+    
+    
+class ResetPass(forms.Form):
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "placeholder": "Password",
+                "class": "form-control"
+            }
+        ))
+    re_password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "placeholder": "Re-type Password",
+                "class": "form-control"
+            }
+        ))
 
 
 class SignUpForm(UserCreationForm):
