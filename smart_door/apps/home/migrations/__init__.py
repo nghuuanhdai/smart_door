@@ -2,5 +2,3 @@
 """
 Copyright (c) 2019 - present AppSeed.us
 """
-
-# default_app_config = 'apps.home.config.MyConfig'

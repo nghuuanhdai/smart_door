@@ -24,7 +24,7 @@ class ScheduleAdmin(admin.ModelAdmin):
 
 @admin.register(RoomAccessLog)
 class RoomAccessLogAdmin(admin.ModelAdmin):
-    list_display = ['room', 'user', 'temp', 'status']
+    list_display = ['room', 'user', 'temp', 'status', 'time']
 
 
 @admin.register(RoomPresent)

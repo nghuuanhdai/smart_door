@@ -1,5 +1,4 @@
 
-from pyexpat import model
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -48,6 +47,7 @@ class RoomAccessLog(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     temp = models.FloatField(default=37)
+    time = models.DateTimeField(default=now)
     status = models.TextField()
 
 class RoomPresent(models.Model):
