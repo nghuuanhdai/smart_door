@@ -51,6 +51,8 @@ class RoomAccessLog(models.Model):
     status = models.TextField()
 
 class RoomPresent(models.Model):
-    room = models.OneToOneField(Room, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='room')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
     temp = models.FloatField(default=37)
+    class Meta:
+        unique_together = ['room', 'user']

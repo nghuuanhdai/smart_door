@@ -21,7 +21,10 @@ class MyConfig(AppConfig):
         for room in rooms:
             room.authorized_present = 0
             room.save()
-
+        from .models import RoomPresent
+        RoomPresent.objects.all().delete()
+        print('complete')
+        
         from apscheduler.schedulers.background import BackgroundScheduler
         from .door_schedule_messenger import update_access_list
         update_access_list

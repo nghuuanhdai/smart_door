@@ -53,6 +53,10 @@ def message(client , feed_id , payload):
             
             room = Room.objects.get(id=int(room_id))
             user = Profile.objects.get(card_id=card_id).user
+            try:
+                RoomPresent.objects.filter(user=user).delete()
+            except Exception as e:
+                print(e)
 
             temp = data["TEMPERATURE"]
             access_log = RoomAccessLog()
@@ -62,16 +66,39 @@ def message(client , feed_id , payload):
             access_log.status = RoomAccessLog.STATUS_ALLOWED
 
             access_log.save()
+            try:
+                room_present = RoomPresent()
+                room_present.user = user
+                room_present.room = room
+                room_present.temp = temp
+                room_present.save()
+                room.authorized_present = RoomPresent.objects.filter(room=room).count()
+                room.save()
+            except Exception as e:
+                print(e)
             
-            room_present = RoomPresent()
-            room_present.user = user
-            room_present.room = room
-            room_present.temp = temp
-            room_present.save()
+        if status == "TIMEOUT_SCHEDULING":
+            from .mail_module import alert_admin
+            card_id = data["ID"]
+            room_id = data["ROOM"]
+            room = Room.objects.get(id=int(room_id))
+            user = Profile.objects.get(card_id=card_id).user
+            alert_email = room.room_alert_email
+            alert_admin(alert_email, f'ID timeout', f'{datetime.now()}\nID {card_id} timeout but still in room', {})
+            access_log = RoomAccessLog()
+            access_log.user = user
+            access_log.room = room
+            access_log.status = RoomAccessLog.STATUS_DENIED
 
-            room.authorized_present += 1
-            room.save()
-
+            access_log.save()
+            try:
+                room_present = RoomPresent.objects.get(user=user, room=room)
+                room_present.delete()
+                room.authorized_present = RoomPresent.objects.filter(room=room).count()
+                room.save()
+            except Exception as e:
+                print(e)
+        
         if status == "NOT_ALLOW":
             card_id = data["ID"]
             room_id = data["ROOM"]
@@ -103,10 +130,10 @@ def message(client , feed_id , payload):
             try:
                 room_present = RoomPresent.objects.get(user=user, room=room)
                 room_present.delete()
-                room.authorized_present -= 1
+                room.authorized_present = RoomPresent.objects.filter(room=room).count()
                 room.save()
-            except:
-                pass
+            except Exception as e:
+                print(e)
             
     
     if "HEAD_COUNT" in data:
@@ -114,7 +141,6 @@ def message(client , feed_id , payload):
         head_count = data["HEAD_COUNT"]
         image_url = data["IMAGE_URL"]
 
-        print(head_count)
         try:
             room = Room.objects.get(id=room_id)
             present_number = RoomPresent.objects.filter(room=room).count()
