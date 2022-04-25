@@ -1,9 +1,8 @@
-from cProfile import Profile
 import sys
 from Adafruit_IO import MQTTClient
 import json
 
-from .models import Room, RoomAccessLog, RoomPresent
+from .models import Room, RoomAccessLog, RoomPresent, Profile
 from .mail_module import alert_admin
 from datetime import date, datetime
 import requests
@@ -20,7 +19,10 @@ AIO_FEEDS = [AIO_DOORMONITOR]
 
 __shared_client = None
 def data_connect():
+    # pass
     global __shared_client
+    if __shared_client:
+        return
     __shared_client = MQTTClient(AIO_USERNAME , AIO_KEY)
     __shared_client.on_connect = connected
     __shared_client.on_disconnect = disconnected
@@ -43,8 +45,8 @@ def disconnected(client):
 def message(client , feed_id , payload):
     print(f'receive {feed_id}: \n{[payload]}\n')
     data = json.loads(payload)
-    if "Status" in data:
-        status = data["Status"]
+    if "STATUS" in data:
+        status = data["STATUS"]
         if status == "ALLOW":
             card_id = data["ID"]
             room_id = data["ROOM"]
@@ -52,7 +54,7 @@ def message(client , feed_id , payload):
             room = Room.objects.get(id=int(room_id))
             user = Profile.objects.get(card_id=card_id).user
 
-            temp = data["Temperature"]
+            temp = data["TEMPERATURE"]
             access_log = RoomAccessLog()
             access_log.user = user
             access_log.room = room
@@ -76,7 +78,7 @@ def message(client , feed_id , payload):
             room = Room.objects.get(id=int(room_id))
             user = Profile.objects.get(card_id=card_id).user
 
-            temp = data["Temperature"]
+            temp = data["TEMPERATURE"]
             access_log = RoomAccessLog()
             access_log.user = user
             access_log.room = room
@@ -98,12 +100,14 @@ def message(client , feed_id , payload):
             access_log.status = RoomAccessLog.STATUS_DENIED
 
             access_log.save()
+            try:
+                room_present = RoomPresent.objects.get(user=user, room=room)
+                room_present.delete()
+                room.authorized_present -= 1
+                room.save()
+            except:
+                pass
             
-            room_present = RoomPresent.objects.get(user=user, room=room)
-            room_present.delete()
-
-            room.authorized_present -= 1
-            room.save()
     
     if "HEAD_COUNT" in data:
         room_id = data["ROOM"]
@@ -130,6 +134,11 @@ def message(client , feed_id , payload):
 
         except Room.DoesNotExist:
             pass
+    for message_callback in callbacks:
+        try:
+            message_callback.on_mqtt_message(data)
+        except Exception as e:
+            print(e) 
 
 def send_over_crowded_warning(room_id, people_in_image, people_in_schedule, image_paths):
     try:
@@ -140,7 +149,18 @@ def send_over_crowded_warning(room_id, people_in_image, people_in_schedule, imag
     except Room.DoesNotExist:
         return
 
+callbacks = set()
+def register_onmessage(mqtt_message_listener):
+    callbacks.add(mqtt_message_listener)
+
+def deregister_onmessage(mqtt_message_listener):
+    if mqtt_message_listener in callbacks:
+        callbacks.discard(mqtt_message_listener)
+
 def data_send_data(feed, data):
-    json_str = json.dumps(data.__dict__)
+    ada_send_dict(feed, data.__dict__)
+
+def ada_send_dict(feed, dict_data):
+    json_str = json.dumps(dict_data)
     print(f'sending {json_str} to {feed}')
     __shared_client.publish(feed, json_str)
